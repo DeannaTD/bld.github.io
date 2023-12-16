@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
+        body{
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Major Mono Display', monospace;
+            color: #fff;
+            background-color: #000;
+        }
+
+        .wrapper{
+            position: relative;
+            display: flex;
+            height: 15vmin;
+            overflow: hidden;
+            border-top: 3px solid #fff;
+        }
+
+        .number-wrapper{
+            transition: margin-top .5s ease-in-out;
+        }
+
+        .number, .separator{
+            display: flex;
+            align-items: center;
+            font-size: 15vmin;
+            height: 15vmin;
+        }
+
+        .wrapper-box{
+            display: flex;
+            position: relative;
+        }
+
+        .label{
+            display: block;
+            position: absolute;
+            top: 60%;
+            transform: translate(0, -50%);
+            width: 100%;
+            text-align: center;
+            background-color: #000000AD;
+            font-size: 3vmin;
+        }
+
+        .loader{
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000;
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+        .loader img{
+            width: 20vmax;
+            height: 20vmax;
+            animation: loader 1s step-end infinite;
+        }
+        @keyframes loader {
+            0%{
+                transform: rotate(-30deg);
+            }
+            50%{
+                transform: rotate(15deg);
+            }
+            100%{
+                transform: rotate(-30deg);
+            }
+        }
+
+        .marquee img{
+            width: 10vmax;
+            animation: marquee 2s linear alternate infinite;
+            position: absolute;
+            top: 1rem;
+        }
+
+        @keyframes marquee {
+            0% {
+                margin-top: 0;
+            }
+            100%{
+                margin-top: 3vmin;
+            }
+        }
+
+        @keyframes rock {
+            0%{
+                transform: rotateZ(20deg);
+            }
+            50%{
+                transform: rotateZ(-15deg);
+            }
+        }
+        #dudu-bear{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="marquee">
+        <img src="dudu.gif" alt="Dudu" id="dudu">
+        <img src="bubu.gif" alt="Bubu" id="bubu">
+    </div>
+    <div class="loader">
+        <img src="dudu-bear.png" alt="dudu" id="dudu-bear">
+        <p>hello, dudu!</p>
+        <p>this is a countdown till we meet!</p>
+        <p>click on dudu to continue</p>
+    </div>
+    <div class="wrapper">
+        <div class="wrapper-box">
+            <span class="label">days</span>
+            <div class="number-wrapper days-wrapper-0"></div>
+            <div class="number-wrapper days-wrapper-1"></div>
+        </div>
+        <span class="separator">:</span>
+        <div class="wrapper-box">
+            <span class="label">hours</span>
+            <div class="number-wrapper hours-wrapper-0"></div>
+            <div class="number-wrapper hours-wrapper-1"></div>
+        </div>
+        <span class="separator">:</span>
+        <div class="wrapper-box">
+            <span class="label">minutes</span>
+            <div class="number-wrapper minutes-wrapper-0"></div>
+            <div class="number-wrapper minutes-wrapper-1"></div>
+        </div>
+        <span class="separator last-separator">:</span>
+        <div class="wrapper-box">
+            <span class="label">seconds</span>
+            <div class="number-wrapper seconds-wrapper-0"></div>
+            <div class="number-wrapper seconds-wrapper-1"></div>
+        </div>
+    </div>
+    <script>
+        
+        var wrappers = document.getElementsByClassName("number-wrapper")
+
+        for(let wrapper of wrappers){
+            for(let i = 0; i < 10; i++){
+                let number = document.createElement("span")
+                number.classList.add("number")
+                number.innerText = i
+                wrapper.appendChild(number)
+            }
+        }
+
+        let getTime = (milliseconds) => {
+            let days = Math.floor(milliseconds / (24 * 60 * 60 * 1000))
+            milliseconds -= days * 24 * 60 * 60 * 1000
+            let hours = Math.floor(milliseconds / (60 * 60 * 1000))
+            milliseconds -= hours * 60 * 60 * 1000
+            let minutes = Math.floor(milliseconds / (60 * 1000))
+            milliseconds -= minutes * 60 * 1000
+            let seconds = Math.floor(milliseconds / 1000)
+            return {
+                'days': [Math.floor(days / 10), days % 10],
+                'hours': [Math.floor(hours / 10), hours % 10],
+                'minutes': [Math.floor(minutes / 10), minutes % 10],
+                'seconds': [Math.floor(seconds / 10), seconds % 10]
+            }
+        }
+
+        var offset = document.getElementsByClassName("number")[0].clientHeight
+        var target_date = Date.parse("16 Jan 2024 12:05:00 UTC+1")
+
+        let setTime = ()=>{
+            let time = getTime(target_date - Date.now())
+            $(".days-wrapper-0").css("margin-top", -offset * time.days[0])
+            $(".days-wrapper-1").css("margin-top", -offset * time.days[1])
+            $(".hours-wrapper-0").css("margin-top", -offset * time.hours[0])
+            $(".hours-wrapper-1").css("margin-top", -offset * time.hours[1])
+            $(".minutes-wrapper-0").css("margin-top", -offset * time.minutes[0])
+            $(".minutes-wrapper-1").css("margin-top", -offset * time.minutes[1])
+            $(".seconds-wrapper-0").css("margin-top", -offset * time.seconds[0])
+            $(".seconds-wrapper-1").css("margin-top", -offset * time.seconds[1])
+        }
+        $(window).on('resize', () => {
+            offset = document.getElementsByClassName("number")[0].clientHeight
+            setTime()
+            if(window.innerWidth <= $(".wrapper").width())
+            {
+                $(".wrapper-box:last-child").css("display", "none")
+                $(".last-separator").css("display", "none")
+            }
+            else{
+                $(".wrapper-box:last-child").css("display", "flex")
+                $(".last-separator").css("display", "flex")
+            }
+        })
+        setInterval(setTime, 1000)
+        $(window).on('load', () => {
+            $('#dudu-bear').on('click', () => {
+                let xmax = 31 * 24 * 60 * 60 * 1000
+                let timeInt = target_date - Date.now()
+                let margin = 40 - (Math.floor((timeInt / xmax)) * 40)
+                $('#dudu').css('left', margin + 'vw');
+                $('#bubu').css('right', margin + 'vw');
+                setInterval(() => {
+                    let xmax = 31 * 24 * 60 * 60 * 1000
+                    let timeInt = target_date - Date.now()
+                    let margin = 40 - (Math.floor((timeInt / xmax)) * 40)
+                    $('#dudu').css('left', margin + 'vw');
+                    $('#bubu').css('right', margin + 'vw');
+                }, 1000*60)
+                $(".loader").fadeOut(2000)
+            })
+        })
+
+    </script>
+</body>
+</html>
